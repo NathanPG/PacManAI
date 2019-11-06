@@ -160,18 +160,59 @@ public class GhostAI : MonoBehaviour {
 
 
 		case(State.leaving):
-
-			break;
+                if(transform.position.y == -11)
+                {
+                    _state = State.active;
+                }
+                else
+                {
+                    if(transform.position.x >= 13.48f && transform.position.x <= 13.52f)
+                    {
+                        transform.position = Vector3.Lerp(transform.position, new Vector3(13.5f, -11f, transform.position.z), 3f * Time.deltaTime);
+                    }
+                    else
+                    {
+                        transform.position = Vector3.Lerp(transform.position, new Vector3(13.5f, transform.position.y, transform.position.z), 3f * Time.deltaTime);
+                    }
+                }
+                /*
+                transform.position = Vector3.Lerp(transform.position, new Vector3(13f, -14f, -2f), 3f * Time.deltaTime);
+                if(transform.position.x == gate.transform.position.x)
+                {
+                    transform.position = Vector3.Lerp(transform.position, new Vector3(13f, -18f, -2f), 3f * Time.deltaTime);
+                }
+                */
+                break;
 
 		case(State.active):
-            if (dead) {
-                // etc.
-                // most of your AI code will be placed here!
-            }
-            // etc.
+                if (dead)
+                {
+                    releaseTime = 2f;
+                    this.gameObject.transform.position = new Vector3(13, -14, -2);
+                    _state = State.entering;
+                }
 
-			break;
+                if (ghostID == 1)
+                {
 
+                }
+
+                else if(ghostID == 2)
+                {
+
+                }
+                else if (ghostID == 3)
+                {
+
+                }
+                else if (ghostID == 4)
+                {
+
+                }
+
+                break;
+
+        //Ghost respawn
 		case State.entering:
 
             // Leaving this code in here for you.

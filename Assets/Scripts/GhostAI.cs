@@ -274,19 +274,19 @@ public class GhostAI : MonoBehaviour {
         }
         else
         {
-            if (move.checkDirectionClear(up))
+            if (move.checkDirectionClear(up) && move._dir != Movement.Direction.down)
             {
                 move._dir = Movement.Direction.up;
             }
-            else if (move.checkDirectionClear(left))
+            else if (move.checkDirectionClear(left) && move._dir != Movement.Direction.right)
             {
                 move._dir = Movement.Direction.left;
             }
-            else if (move.checkDirectionClear(down))
+            else if (move.checkDirectionClear(down) && move._dir != Movement.Direction.up)
             {
                 move._dir = Movement.Direction.down;
             }
-            else if (move.checkDirectionClear(right))
+            else if (move.checkDirectionClear(right) && move._dir != Movement.Direction.left)
             {
                 move._dir = Movement.Direction.right;
             }

@@ -67,9 +67,11 @@ public class Movement : MonoBehaviour {
 
 	public void move(Vector2 direc){
 		if (checkDirectionClear (direc)) {
+            //Move right or left
 			if (direc.x != 0) {
 				transform.position = new Vector3 (transform.position.x, Mathf.Round (transform.position.y), transform.position.z);
 			}
+            //Move up or down
 			if (direc.y != 0) {
 				transform.position = new Vector3 (Mathf.Round (transform.position.x), transform.position.y, transform.position.z);
 			}

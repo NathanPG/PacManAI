@@ -135,6 +135,163 @@ public class GhostAI : MonoBehaviour {
 		_state = State.waiting;
 	}
 	
+    public void Chase(float target_x, float target_y)
+    {
+        //Current Ghost Position
+        int y = -1 * Mathf.RoundToInt(transform.position.y);
+        int x = Mathf.RoundToInt(transform.position.x);
+        //CHECK TURNS
+        bool ahead = false;
+        bool turn_right = false;
+        bool turn_left = false;
+        switch (move._dir)
+        {
+            case Movement.Direction.down:
+                ahead = move.checkDirectionClear(down);
+                turn_left = move.checkDirectionClear(right);
+                turn_right = move.checkDirectionClear(left);
+                break;
+            case Movement.Direction.up:
+                ahead = move.checkDirectionClear(up);
+                turn_left = move.checkDirectionClear(left);
+                turn_right = move.checkDirectionClear(right);
+                break;
+            case Movement.Direction.left:
+                ahead = move.checkDirectionClear(left);
+                turn_left = move.checkDirectionClear(down);
+                turn_right = move.checkDirectionClear(up);
+                break;
+            case Movement.Direction.right:
+                ahead = move.checkDirectionClear(right);
+                turn_left = move.checkDirectionClear(up);
+                turn_right = move.checkDirectionClear(down);
+                break;
+        }
+
+
+
+        if (ahead && (turn_left || turn_right) || (turn_left && turn_right))
+        {
+            float[] dists = new float[3];
+            if (ahead)
+            {
+                switch (move._dir)
+                {
+                    case Movement.Direction.down:
+                        dists[0] = Mathf.Sqrt(Mathf.Pow(target_x - x, 2) + Mathf.Pow(target_y - (y - 1), 2));
+                        break;
+                    case Movement.Direction.up:
+                        dists[0] = Mathf.Sqrt(Mathf.Pow(target_x - x, 2) + Mathf.Pow(target_y - (y + 1), 2));
+                        break;
+                    case Movement.Direction.left:
+                        dists[0] = Mathf.Sqrt(Mathf.Pow(target_x - (x - 1), 2) + Mathf.Pow(target_y - y, 2));
+                        break;
+                    case Movement.Direction.right:
+                        dists[0] = Mathf.Sqrt(Mathf.Pow(target_x - (x + 1), 2) + Mathf.Pow(target_y - y, 2));
+                        break;
+                }
+            }
+            if (turn_left)
+            {
+                switch (move._dir)
+                {
+                    case Movement.Direction.down:
+                        dists[1] = Mathf.Sqrt(Mathf.Pow(target_x - (x + 1), 2) + Mathf.Pow(target_y - y, 2));
+                        break;
+                    case Movement.Direction.up:
+                        dists[1] = Mathf.Sqrt(Mathf.Pow(target_x - (x - 1), 2) + Mathf.Pow(target_y - y, 2));
+                        break;
+                    case Movement.Direction.left:
+                        dists[1] = Mathf.Sqrt(Mathf.Pow(target_x - x, 2) + Mathf.Pow(target_y - (y - 1), 2));
+                        break;
+                    case Movement.Direction.right:
+                        dists[1] = Mathf.Sqrt(Mathf.Pow(target_x - x, 2) + Mathf.Pow(target_y - (y + 1), 2));
+                        break;
+                }
+            }
+            if (turn_right)
+            {
+                switch (move._dir)
+                {
+                    case Movement.Direction.down:
+                        dists[2] = Mathf.Sqrt(Mathf.Pow(target_x - x, 2) + Mathf.Pow(target_y - (y - 1), 2));
+                        break;
+                    case Movement.Direction.up:
+                        dists[2] = Mathf.Sqrt(Mathf.Pow(target_x - x, 2) + Mathf.Pow(target_y - (y + 1), 2));
+                        break;
+                    case Movement.Direction.left:
+                        dists[2] = Mathf.Sqrt(Mathf.Pow(target_x - (x - 1), 2) + Mathf.Pow(target_y - y, 2));
+                        break;
+                    case Movement.Direction.right:
+                        dists[2] = Mathf.Sqrt(Mathf.Pow(target_x - (x + 1), 2) + Mathf.Pow(target_y - y, 2));
+                        break;
+                }
+            }
+            int index = Array.IndexOf(dists, dists.Min());
+            switch (index)
+            {
+                case 0:
+                    //move._dir = move._dir;
+                    break;
+                case 1:
+                    switch (move._dir)
+                    {
+                        case Movement.Direction.down:
+                            move._dir = Movement.Direction.right;
+                            break;
+                        case Movement.Direction.up:
+                            move._dir = Movement.Direction.left;
+                            break;
+                        case Movement.Direction.left:
+                            move._dir = Movement.Direction.down;
+                            break;
+                        case Movement.Direction.right:
+                            move._dir = Movement.Direction.up;
+                            break;
+                    }
+                    break;
+                case 2:
+                    switch (move._dir)
+                    {
+                        case Movement.Direction.down:
+                            move._dir = Movement.Direction.left;
+                            break;
+                        case Movement.Direction.up:
+                            move._dir = Movement.Direction.right;
+                            break;
+                        case Movement.Direction.left:
+                            move._dir = Movement.Direction.up;
+                            break;
+                        case Movement.Direction.right:
+                            move._dir = Movement.Direction.down;
+                            break;
+                    }
+                    break;
+            }
+        }
+        else
+        {
+            if (move.checkDirectionClear(up))
+            {
+                move._dir = Movement.Direction.up;
+            }
+            else if (move.checkDirectionClear(left))
+            {
+                move._dir = Movement.Direction.left;
+            }
+            else if (move.checkDirectionClear(down))
+            {
+                move._dir = Movement.Direction.down;
+            }
+            else if (move.checkDirectionClear(right))
+            {
+                move._dir = Movement.Direction.right;
+            }
+        }
+    }
+
+
+
     /// <summary>
     /// This is where most of the work will be done. A switch/case statement is probably 
     /// the first thing to test for. There can be additional tests for specific ghosts,
@@ -187,142 +344,40 @@ public class GhostAI : MonoBehaviour {
                     _state = State.entering;
                 }
 
+                //BLINKY
                 if (ghostID == 1)
                 {
-                    int y = -1 * Mathf.RoundToInt(transform.position.y);
-                    int x = Mathf.RoundToInt(transform.position.x);
-                    bool ahead = false;
-                    bool turn_right = false;
-                    bool turn_left = false;
-
-                    switch (move._dir) {
-                        case Movement.Direction.down:
-                            ahead = move.checkDirectionClear(down);
-                            turn_left = move.checkDirectionClear(right);
-                            turn_right = move.checkDirectionClear(left);
-                            break;
-                        case Movement.Direction.up:
-                            ahead = move.checkDirectionClear(up);
-                            turn_left = move.checkDirectionClear(left);
-                            turn_right = move.checkDirectionClear(right);
-                            break;
-                        case Movement.Direction.left:
-                            ahead = move.checkDirectionClear(left);
-                            turn_left = move.checkDirectionClear(down);
-                            turn_right = move.checkDirectionClear(up);
-                            break;
-                        case Movement.Direction.right:
-                            ahead = move.checkDirectionClear(right);
-                            turn_left = move.checkDirectionClear(up);
-                            turn_right = move.checkDirectionClear(down);
-                            break;
-                    }
-                    if(ahead && (turn_left || turn_right) || (turn_left && turn_right)) {
-                        float target_x = pacMan.transform.position.x;
-                        float target_y = pacMan.transform.position.y;
-                        float[] dists = new float[3];
-                        if (ahead) {
-                            switch (move._dir) {
-                                case Movement.Direction.down:
-                                    dists[0] = Mathf.Sqrt(Mathf.Pow(target_x - x, 2) + Mathf.Pow(target_y - (y - 1), 2));
-                                    break;
-                                case Movement.Direction.up:
-                                    dists[0] = Mathf.Sqrt(Mathf.Pow(target_x - x, 2) + Mathf.Pow(target_y - (y + 1), 2));
-                                    break;
-                                case Movement.Direction.left:
-                                    dists[0] = Mathf.Sqrt(Mathf.Pow(target_x - (x - 1), 2) + Mathf.Pow(target_y - y, 2));
-                                    break;
-                                case Movement.Direction.right:
-                                    dists[0] = Mathf.Sqrt(Mathf.Pow(target_x - (x + 1), 2) + Mathf.Pow(target_y - y, 2));
-                                    break;
-                            }
-                        }
-                        if (turn_left) {
-                            switch (move._dir) {
-                                case Movement.Direction.down:
-                                    dists[1] = Mathf.Sqrt(Mathf.Pow(target_x - (x + 1), 2) + Mathf.Pow(target_y - y, 2));
-                                    break;
-                                case Movement.Direction.up:
-                                    dists[1] = Mathf.Sqrt(Mathf.Pow(target_x - (x - 1), 2) + Mathf.Pow(target_y - y, 2));
-                                    break;
-                                case Movement.Direction.left:
-                                    dists[1] = Mathf.Sqrt(Mathf.Pow(target_x - x, 2) + Mathf.Pow(target_y - (y - 1), 2));
-                                    break;
-                                case Movement.Direction.right:
-                                    dists[1] = Mathf.Sqrt(Mathf.Pow(target_x - x, 2) + Mathf.Pow(target_y - (y + 1), 2));
-                                    break;
-                            }
-                        }
-                        if (turn_right) {
-                            switch (move._dir) {
-                                case Movement.Direction.down:
-                                    dists[2] = Mathf.Sqrt(Mathf.Pow(target_x - x, 2) + Mathf.Pow(target_y - (y - 1), 2));
-                                    break;
-                                case Movement.Direction.up:
-                                    dists[2] = Mathf.Sqrt(Mathf.Pow(target_x - x, 2) + Mathf.Pow(target_y - (y + 1), 2));
-                                    break;
-                                case Movement.Direction.left:
-                                    dists[2] = Mathf.Sqrt(Mathf.Pow(target_x - (x - 1), 2) + Mathf.Pow(target_y - y, 2));
-                                    break;
-                                case Movement.Direction.right:
-                                    dists[2] = Mathf.Sqrt(Mathf.Pow(target_x - (x + 1), 2) + Mathf.Pow(target_y - y, 2));
-                                    break;
-                            }
-                        }
-                        int index = Array.IndexOf(dists, dists.Min());
-                        switch (index) {
-                            case 0:
-                                //move._dir = move._dir;
-                                break;
-                            case 1:
-                                switch (move._dir) {
-                                    case Movement.Direction.down:
-                                        move._dir = Movement.Direction.right;
-                                        break;
-                                    case Movement.Direction.up:
-                                        move._dir = Movement.Direction.left;
-                                        break;
-                                    case Movement.Direction.left:
-                                        move._dir = Movement.Direction.down;
-                                        break;
-                                    case Movement.Direction.right:
-                                        move._dir = Movement.Direction.up;
-                                        break;
-                                }
-                                break;
-                            case 2:
-                                switch (move._dir) {
-                                    case Movement.Direction.down:
-                                        move._dir = Movement.Direction.left;
-                                        break;
-                                    case Movement.Direction.up:
-                                        move._dir = Movement.Direction.right;
-                                        break;
-                                    case Movement.Direction.left:
-                                        move._dir = Movement.Direction.up;
-                                        break;
-                                    case Movement.Direction.right:
-                                        move._dir = Movement.Direction.down;
-                                        break;
-                                }
-                                break;
-                        }
-                    } else {
-                        if (move.checkDirectionClear(up)) {
-                            move._dir = Movement.Direction.up;
-                        }else if (move.checkDirectionClear(left)) {
-                            move._dir = Movement.Direction.left;
-                        }else if (move.checkDirectionClear(down)) {
-                            move._dir = Movement.Direction.down;
-                        }else if (move.checkDirectionClear(right)) {
-                            move._dir = Movement.Direction.right;
-                        }
-                    }
+                    //CHASE
+                    Chase(pacMan.transform.position.x, pacMan.transform.position.y); 
                 }
+                //PINKY
 
                 else if(ghostID == 2)
                 {
+                    //GET TARGET
+                    float target_x = pacMan.transform.position.x;
+                    float target_y = pacMan.transform.position.y;
+                    switch (pacMan.GetComponent<Movement>()._dir)
+                    {
+                        case Movement.Direction.up:
+                            target_x = pacMan.transform.position.x - 4;
+                            target_y = pacMan.transform.position.y + 4;
+                            break;
+                        case Movement.Direction.down:
+                            target_x = pacMan.transform.position.x;
+                            target_y = pacMan.transform.position.y - 4;
+                            break;
+                        case Movement.Direction.left:
+                            target_x = pacMan.transform.position.x - 4;
+                            target_y = pacMan.transform.position.y;
+                            break;
+                        case Movement.Direction.right:
+                            target_x = pacMan.transform.position.x + 4;
+                            target_y = pacMan.transform.position.y;
+                            break;
 
+                    }
+                    //CHASE
                 }
                 else if (ghostID == 3)
                 {
@@ -330,7 +385,20 @@ public class GhostAI : MonoBehaviour {
                 }
                 else if (ghostID == 4)
                 {
-
+                    //GET TARGET
+                    float target_x = pacMan.transform.position.x;
+                    float target_y = pacMan.transform.position.y;
+                    if (Mathf.Sqrt(Mathf.Pow(target_x - transform.position.x, 2) + Mathf.Pow(target_y - transform.position.y, 2))<= 8f)
+                    {
+                        target_x = pacMan.transform.position.x;
+                        target_y = pacMan.transform.position.y;
+                    }
+                    else
+                    {
+                        target_x = 1f;
+                        target_y = -32f;
+                    }
+                    //CHASE
                 }
 
                 break;

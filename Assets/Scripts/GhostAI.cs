@@ -173,6 +173,9 @@ public class GhostAI : MonoBehaviour {
         if (ahead && (turn_left || turn_right) || (turn_left && turn_right))
         {
             float[] dists = new float[3];
+            dists[0] = 999f;
+            dists[1] = 999f;
+            dists[2] = 999f;
             if (ahead)
             {
                 switch (move._dir)

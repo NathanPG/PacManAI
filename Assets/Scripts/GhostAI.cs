@@ -167,17 +167,20 @@ public class GhostAI : MonoBehaviour {
                 turn_right = move.checkDirectionClear(down);
                 break;
         }
-
-
+        Debug.Log("AHEAD " + ahead);
+        Debug.Log("RIGHT " + turn_right);
+        Debug.Log("LEFT" + turn_left);
 
         if (ahead && (turn_left || turn_right) || (turn_left && turn_right))
         {
+            Debug.Log("MORE THAN ONE WAYS");
             float[] dists = new float[3];
             dists[0] = 999f;
             dists[1] = 999f;
             dists[2] = 999f;
             if (ahead)
             {
+                Debug.Log("CAN GO AHEAD");
                 switch (move._dir)
                 {
                     case Movement.Direction.down:
@@ -196,6 +199,7 @@ public class GhostAI : MonoBehaviour {
             }
             if (turn_left)
             {
+                Debug.Log("CAN TURN LEFT");
                 switch (move._dir)
                 {
                     case Movement.Direction.down:
@@ -214,6 +218,7 @@ public class GhostAI : MonoBehaviour {
             }
             if (turn_right)
             {
+                Debug.Log("CAN TURN RIGHT");
                 switch (move._dir)
                 {
                     case Movement.Direction.down:
@@ -272,8 +277,10 @@ public class GhostAI : MonoBehaviour {
                     break;
             }
         }
+        //ONE DIRECTION
         else
         {
+            /*
             if (move.checkDirectionClear(up))
             {
                 move._dir = Movement.Direction.up;
@@ -290,6 +297,7 @@ public class GhostAI : MonoBehaviour {
             {
                 move._dir = Movement.Direction.right;
             }
+            */
         }
     }
 

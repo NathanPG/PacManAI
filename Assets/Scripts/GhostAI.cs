@@ -146,6 +146,9 @@ public class GhostAI : MonoBehaviour {
         bool turn_left = false;
         switch (move._dir)
         {
+            case Movement.Direction.still:
+                move._dir = Movement.Direction.left;
+                return;
             case Movement.Direction.down:
                 ahead = move.checkDirectionClear(down);
                 turn_left = move.checkDirectionClear(right);
@@ -167,11 +170,14 @@ public class GhostAI : MonoBehaviour {
                 turn_right = move.checkDirectionClear(down);
                 break;
         }
+        //Debug.Log("ahead:" + ahead);
+        //Debug.Log("left:" + turn_left);
+        //Debug.Log("right:" + turn_right);
 
-
-
-        if (ahead && (turn_left || turn_right) || (turn_left && turn_right))
+        if ((ahead && turn_right) || (turn_left && ahead) || (turn_left && turn_right))
         {
+            Debug.Log("In if statement");
+            Debug.Log("ahead: " + ahead + ", turn_left: " + turn_left + ", turn_right: " + turn_right);
             float[] dists = new float[3];
             dists[0] = 999f;
             dists[1] = 999f;
@@ -181,15 +187,19 @@ public class GhostAI : MonoBehaviour {
                 switch (move._dir)
                 {
                     case Movement.Direction.down:
-                        dists[0] = Mathf.Sqrt(Mathf.Pow(target_x - x, 2) + Mathf.Pow(target_y - (y - 1), 2));
-                        break;
-                    case Movement.Direction.up:
+                        y = -1 * Mathf.CeilToInt(transform.position.y);
                         dists[0] = Mathf.Sqrt(Mathf.Pow(target_x - x, 2) + Mathf.Pow(target_y - (y + 1), 2));
                         break;
+                    case Movement.Direction.up:
+                        y = -1 * Mathf.FloorToInt(transform.position.y);
+                        dists[0] = Mathf.Sqrt(Mathf.Pow(target_x - x, 2) + Mathf.Pow(target_y - (y - 1), 2));
+                        break;
                     case Movement.Direction.left:
+                        x = Mathf.CeilToInt(transform.position.x);
                         dists[0] = Mathf.Sqrt(Mathf.Pow(target_x - (x - 1), 2) + Mathf.Pow(target_y - y, 2));
                         break;
                     case Movement.Direction.right:
+                        x = Mathf.FloorToInt(transform.position.x);
                         dists[0] = Mathf.Sqrt(Mathf.Pow(target_x - (x + 1), 2) + Mathf.Pow(target_y - y, 2));
                         break;
                 }
@@ -199,16 +209,20 @@ public class GhostAI : MonoBehaviour {
                 switch (move._dir)
                 {
                     case Movement.Direction.down:
+                        y = -1 * Mathf.CeilToInt(transform.position.y);
                         dists[1] = Mathf.Sqrt(Mathf.Pow(target_x - (x + 1), 2) + Mathf.Pow(target_y - y, 2));
                         break;
                     case Movement.Direction.up:
+                        y = -1 * Mathf.FloorToInt(transform.position.y);
                         dists[1] = Mathf.Sqrt(Mathf.Pow(target_x - (x - 1), 2) + Mathf.Pow(target_y - y, 2));
                         break;
                     case Movement.Direction.left:
-                        dists[1] = Mathf.Sqrt(Mathf.Pow(target_x - x, 2) + Mathf.Pow(target_y - (y - 1), 2));
+                        x = Mathf.CeilToInt(transform.position.x);
+                        dists[1] = Mathf.Sqrt(Mathf.Pow(target_x - x, 2) + Mathf.Pow(target_y - (y + 1), 2));
                         break;
                     case Movement.Direction.right:
-                        dists[1] = Mathf.Sqrt(Mathf.Pow(target_x - x, 2) + Mathf.Pow(target_y - (y + 1), 2));
+                        x = Mathf.FloorToInt(transform.position.x);
+                        dists[1] = Mathf.Sqrt(Mathf.Pow(target_x - x, 2) + Mathf.Pow(target_y - (y - 1), 2));
                         break;
                 }
             }
@@ -217,20 +231,26 @@ public class GhostAI : MonoBehaviour {
                 switch (move._dir)
                 {
                     case Movement.Direction.down:
-                        dists[2] = Mathf.Sqrt(Mathf.Pow(target_x - x, 2) + Mathf.Pow(target_y - (y - 1), 2));
-                        break;
-                    case Movement.Direction.up:
-                        dists[2] = Mathf.Sqrt(Mathf.Pow(target_x - x, 2) + Mathf.Pow(target_y - (y + 1), 2));
-                        break;
-                    case Movement.Direction.left:
+                        y = -1 * Mathf.CeilToInt(transform.position.y);
                         dists[2] = Mathf.Sqrt(Mathf.Pow(target_x - (x - 1), 2) + Mathf.Pow(target_y - y, 2));
                         break;
-                    case Movement.Direction.right:
+                    case Movement.Direction.up:
+                        y = -1 * Mathf.FloorToInt(transform.position.y);
                         dists[2] = Mathf.Sqrt(Mathf.Pow(target_x - (x + 1), 2) + Mathf.Pow(target_y - y, 2));
+                        break;
+                    case Movement.Direction.left:
+                        x = Mathf.CeilToInt(transform.position.x);
+                        dists[2] = Mathf.Sqrt(Mathf.Pow(target_x - x, 2) + Mathf.Pow(target_y - (y - 1), 2));
+                        break;
+                    case Movement.Direction.right:
+                        x = Mathf.FloorToInt(transform.position.x);
+                        dists[2] = Mathf.Sqrt(Mathf.Pow(target_x - x, 2) + Mathf.Pow(target_y - (y + 1), 2));
                         break;
                 }
             }
             int index = Array.IndexOf(dists, dists.Min());
+            Debug.Log("dist:" + dists[0] + "," + dists[1] +"," + dists[2]);
+            Debug.Log("index" + index);
             switch (index)
             {
                 case 0:
@@ -274,20 +294,13 @@ public class GhostAI : MonoBehaviour {
         }
         else
         {
-            if (move.checkDirectionClear(up) && move._dir != Movement.Direction.down)
-            {
+            if (move.checkDirectionClear(up) && move._dir != Movement.Direction.down) {
                 move._dir = Movement.Direction.up;
-            }
-            else if (move.checkDirectionClear(left) && move._dir != Movement.Direction.right)
-            {
+            } else if (move.checkDirectionClear(left) && move._dir != Movement.Direction.right) {
                 move._dir = Movement.Direction.left;
-            }
-            else if (move.checkDirectionClear(down) && move._dir != Movement.Direction.up)
-            {
+            } else if (move.checkDirectionClear(down) && move._dir != Movement.Direction.up) {
                 move._dir = Movement.Direction.down;
-            }
-            else if (move.checkDirectionClear(right) && move._dir != Movement.Direction.left)
-            {
+            } else if (move.checkDirectionClear(right) && move._dir != Movement.Direction.left) {
                 move._dir = Movement.Direction.right;
             }
         }
@@ -351,7 +364,7 @@ public class GhostAI : MonoBehaviour {
                 if (ghostID == 1)
                 {
                     //CHASE
-                    Chase(pacMan.transform.position.x, pacMan.transform.position.y); 
+                    Chase(pacMan.transform.position.x, -1*pacMan.transform.position.y); 
                 }
                 //PINKY
 

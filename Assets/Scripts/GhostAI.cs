@@ -98,6 +98,7 @@ public class GhostAI : MonoBehaviour {
 	public int[] choices ;
 	public float choice;
 
+    public float TurnTimer = 0f;
 
     private static Vector2 up = new Vector2(0f, 1f);
     private static Vector2 down = new Vector2(0f, -1f);
@@ -176,8 +177,8 @@ public class GhostAI : MonoBehaviour {
 
         if ((ahead && turn_right) || (turn_left && ahead) || (turn_left && turn_right))
         {
-            Debug.Log("In if statement");
-            Debug.Log("ahead: " + ahead + ", turn_left: " + turn_left + ", turn_right: " + turn_right);
+            //Debug.Log("In if statement");
+            //Debug.Log("ahead: " + ahead + ", turn_left: " + turn_left + ", turn_right: " + turn_right);
             float[] dists = new float[3];
             dists[0] = 999f;
             dists[1] = 999f;
@@ -249,51 +250,65 @@ public class GhostAI : MonoBehaviour {
                 }
             }
             int index = Array.IndexOf(dists, dists.Min());
-            Debug.Log("dist:" + dists[0] + "," + dists[1] +"," + dists[2]);
-            Debug.Log("index" + index);
+            //Debug.Log("dist:" + dists[0] + "," + dists[1] +"," + dists[2]);
+            //Debug.Log("index" + index);
             switch (index)
             {
                 case 0:
                     //move._dir = move._dir;
                     break;
                 case 1:
-                    switch (move._dir)
+                    
+                    if (TurnTimer <= 0f)
                     {
-                        case Movement.Direction.down:
-                            move._dir = Movement.Direction.right;
-                            break;
-                        case Movement.Direction.up:
-                            move._dir = Movement.Direction.left;
-                            break;
-                        case Movement.Direction.left:
-                            move._dir = Movement.Direction.down;
-                            break;
-                        case Movement.Direction.right:
-                            move._dir = Movement.Direction.up;
-                            break;
+                        TurnTimer = 0.2f;
+                        switch (move._dir)
+                        {
+                            case Movement.Direction.down:
+                                move._dir = Movement.Direction.right;
+                                break;
+                            case Movement.Direction.up:
+                                move._dir = Movement.Direction.left;
+                                break;
+                            case Movement.Direction.left:
+                                move._dir = Movement.Direction.down;
+                                break;
+                            case Movement.Direction.right:
+                                move._dir = Movement.Direction.up;
+                                break;
+                        }
                     }
                     break;
                 case 2:
-                    switch (move._dir)
+                    if (TurnTimer <= 0f)
                     {
-                        case Movement.Direction.down:
-                            move._dir = Movement.Direction.left;
-                            break;
-                        case Movement.Direction.up:
-                            move._dir = Movement.Direction.right;
-                            break;
-                        case Movement.Direction.left:
-                            move._dir = Movement.Direction.up;
-                            break;
-                        case Movement.Direction.right:
-                            move._dir = Movement.Direction.down;
-                            break;
+                        TurnTimer = 0.2f;
+                        switch (move._dir)
+                        {
+                            case Movement.Direction.down:
+                                move._dir = Movement.Direction.left;
+                                break;
+                            case Movement.Direction.up:
+                                move._dir = Movement.Direction.right;
+                                break;
+                            case Movement.Direction.left:
+                                move._dir = Movement.Direction.up;
+                                break;
+                            case Movement.Direction.right:
+                                move._dir = Movement.Direction.down;
+                                break;
+                        }
                     }
+                    
                     break;
             }
         }
         else
         {
+            if(ahead != true)
+            {
+                TurnTimer = 0.2f;
+            }
             if (move.checkDirectionClear(up) && move._dir != Movement.Direction.down) {
                 move._dir = Movement.Direction.up;
             } else if (move.checkDirectionClear(left) && move._dir != Movement.Direction.right) {
@@ -316,6 +331,10 @@ public class GhostAI : MonoBehaviour {
     /// 
     /// </summary>
 	void Update () {
+        if(TurnTimer > 0f)
+        {
+            TurnTimer -= Time.deltaTime;
+        }
 		switch (_state) {
 		case(State.waiting):
 
@@ -343,6 +362,7 @@ public class GhostAI : MonoBehaviour {
 		case(State.leaving):
                 
                 if(transform.position.y > -11.02 && transform.position.y < -10.98) {
+                    this.gameObject.GetComponent<CircleCollider2D>().enabled = true;
                     move._dir = Movement.Direction.up;
                     _state = State.active;
                 }else if(transform.position.x > 13.48 && transform.position.x < 13.52) {

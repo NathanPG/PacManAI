@@ -60,7 +60,7 @@ public class MazeCreator : MonoBehaviour {
         string text = inputMap.text;
         string[] lines = text.Split('\n');
         Map = lines;
-        print(Map);
+        //print(Map);
 
         // Parse through all that map
         for (int i = 0; i < lines.Length; i++)

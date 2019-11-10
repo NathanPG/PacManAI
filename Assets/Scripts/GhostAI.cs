@@ -53,6 +53,8 @@ public class GhostAI : MonoBehaviour {
     private bool[] dirs = new bool[4];
 	private bool[] prevDirs = new bool[4];
 
+    public bool alter_Behvior = false;
+
     public float fleeTime = 0f;
     private float fleeTimeReset = 10f;
     public float releaseTime = 0f;          // This could be a tunable number
@@ -334,7 +336,95 @@ public class GhostAI : MonoBehaviour {
         }
     }
 
+    private void PriorityTurn(int[] priority) {
+        //Current Ghost Position
+        int y = -1 * Mathf.RoundToInt(transform.position.y);
+        int x = Mathf.RoundToInt(transform.position.x);
+        //CHECK TURNS
+        bool ahead = false;
+        bool turn_right = false;
+        bool turn_left = false;
+        int back = 0;
+        switch (move._dir) {
+            case Movement.Direction.still:
+                move._dir = Movement.Direction.left;
+                return;
+            case Movement.Direction.down:
+                ahead = move.checkDirectionClear(down);
+                turn_left = move.checkDirectionClear(right);
+                turn_right = move.checkDirectionClear(left);
+                back = 1;
+                break;
+            case Movement.Direction.up:
+                ahead = move.checkDirectionClear(up);
+                turn_left = move.checkDirectionClear(left);
+                turn_right = move.checkDirectionClear(right);
+                back = 3;
+                break;
+            case Movement.Direction.left:
+                ahead = move.checkDirectionClear(left);
+                turn_left = move.checkDirectionClear(down);
+                turn_right = move.checkDirectionClear(up);
+                back = 2;
+                break;
+            case Movement.Direction.right:
+                ahead = move.checkDirectionClear(right);
+                turn_left = move.checkDirectionClear(up);
+                turn_right = move.checkDirectionClear(down);
+                back = 4;
+                break;
+        }
 
+        if ((ahead && turn_right) || (turn_left && ahead) || (turn_left && turn_right)) {
+            if (TurnTimer <= 0f) {
+                TurnTimer = .2f;
+                foreach (int i in priority) {
+                    if (i != back) {
+                        Vector2 target_dir = new Vector2(0f, 0f);
+                        Movement.Direction dir = Movement.Direction.still;
+                        switch (i) {
+                            case 1:
+                                target_dir = up;
+                                dir = Movement.Direction.up;
+                                break;
+                            case 2:
+                                target_dir = right;
+                                dir = Movement.Direction.right;
+                                break;
+                            case 3:
+                                target_dir = down;
+                                dir = Movement.Direction.down;
+                                break;
+                            case 4:
+                                target_dir = left;
+                                dir = Movement.Direction.left;
+                                break;
+                        }
+                        if (move.checkDirectionClear(target_dir)) {
+                            move._dir = dir;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            
+        } else {
+            if (ahead != true) {
+                TurnTimer = 0.2f;
+            }
+            if (move.checkDirectionClear(up) && move._dir != Movement.Direction.down) {
+                move._dir = Movement.Direction.up;
+            } else if (move.checkDirectionClear(left) && move._dir != Movement.Direction.right) {
+                move._dir = Movement.Direction.left;
+            } else if (move.checkDirectionClear(down) && move._dir != Movement.Direction.up) {
+                move._dir = Movement.Direction.down;
+            } else if (move.checkDirectionClear(right) && move._dir != Movement.Direction.left) {
+                move._dir = Movement.Direction.right;
+            }
+        }
+
+    }
 
     /// <summary>
     /// This is where most of the work will be done. A switch/case statement is probably 
@@ -400,89 +490,171 @@ public class GhostAI : MonoBehaviour {
                 }
 
                 //BLINKY
-                if (ghostID == 1)
-                {
+                if (ghostID == 1) {
+                    if (alter_Behvior) {
+                        // 1 -> up, 2 -> right, 3 -> down, 4 -> left
+                        float target_x = pacMan.transform.position.x;
+                        float target_y = -1 * pacMan.transform.position.y;
+                        float dist_x = target_x - this.gameObject.transform.position.x;
+                        float dist_y = target_y - Mathf.Abs(this.gameObject.transform.position.y);
+                        int[] priority = new int[4]; 
+                        if(Mathf.Abs(dist_x) >= Mathf.Abs(dist_y)) {
+                            if(dist_x >=0) {
+                                if(dist_y >= 0) {
+                                    priority[0] = 2;
+                                    priority[1] = 3;
+                                    priority[2] = 1;
+                                    priority[3] = 4;
+                                } else {
+                                    priority[0] = 2;
+                                    priority[1] = 1;
+                                    priority[2] = 3;
+                                    priority[3] = 4;
+                                }
+                            } else {
+                                if (dist_y >= 0) {
+                                    priority[0] = 4;
+                                    priority[1] = 3;
+                                    priority[2] = 1;
+                                    priority[3] = 2;
+                                } else {
+                                    priority[0] = 4;
+                                    priority[1] = 1;
+                                    priority[2] = 3;
+                                    priority[3] = 2;
+                                }
+                            }
+                        } else {
+                            if (dist_y >= 0) {
+                                if (dist_x >= 0) {
+                                    priority[0] = 3;
+                                    priority[1] = 2;
+                                    priority[2] = 4;
+                                    priority[3] = 1;
+                                } else {
+                                    priority[0] = 3;
+                                    priority[1] = 4;
+                                    priority[2] = 2;
+                                    priority[3] = 1;
+                                }
+                            } else {
+                                if (dist_x >= 0) {
+                                    priority[0] = 1;
+                                    priority[1] = 2;
+                                    priority[2] = 4;
+                                    priority[3] = 3;
+                                } else {
+                                    priority[0] = 1;
+                                    priority[1] = 4;
+                                    priority[2] = 2;
+                                    priority[3] = 3;
+                                }
+                            }
+                        }
+                        PriorityTurn(priority);
+
+                    } else {
                     //CHASE
-                    Chase(pacMan.transform.position.x, -1*pacMan.transform.position.y); 
+                    Chase(pacMan.transform.position.x, -1 * pacMan.transform.position.y);
+                    }   
                 }
+
+
                 //PINKY
 
                 else if(ghostID == 2)
                 {
-                    //GET TARGET
-                    float target_x = pacMan.transform.position.x;
-                    float target_y = pacMan.transform.position.y;
-                    switch (pacMan.GetComponent<Movement>()._dir)
-                    {
-                        case Movement.Direction.up:
-                            target_x = pacMan.transform.position.x - 4;
-                            target_y = pacMan.transform.position.y + 4;
-                            break;
-                        case Movement.Direction.down:
-                            target_x = pacMan.transform.position.x;
-                            target_y = pacMan.transform.position.y - 4;
-                            break;
-                        case Movement.Direction.left:
-                            target_x = pacMan.transform.position.x - 4;
-                            target_y = pacMan.transform.position.y;
-                            break;
-                        case Movement.Direction.right:
-                            target_x = pacMan.transform.position.x + 4;
-                            target_y = pacMan.transform.position.y;
-                            break;
+                    if (alter_Behvior) {//alternating behavior here
 
+
+
+                    } else {
+                        //GET TARGET
+                        float target_x = pacMan.transform.position.x;
+                        float target_y = -1 * pacMan.transform.position.y;
+                        switch (pacMan.GetComponent<Movement>()._dir) {
+                            case Movement.Direction.up:
+                                target_x = pacMan.transform.position.x - 4;
+                                target_y = pacMan.transform.position.y + 4;
+                                break;
+                            case Movement.Direction.down:
+                                target_x = pacMan.transform.position.x;
+                                target_y = pacMan.transform.position.y - 4;
+                                break;
+                            case Movement.Direction.left:
+                                target_x = pacMan.transform.position.x - 4;
+                                target_y = pacMan.transform.position.y;
+                                break;
+                            case Movement.Direction.right:
+                                target_x = pacMan.transform.position.x + 4;
+                                target_y = pacMan.transform.position.y;
+                                break;
+
+                        }
+
+                        //CHASE
+                        Chase(target_x, target_y);
                     }
-                    //CHASE
-                    Chase(target_x, target_y);
                 }
                 else if (ghostID == 3)
                 {
-                    //GET TARGET
-                    float target_x = pacMan.transform.position.x;
-                    float target_y = pacMan.transform.position.y;
-                    switch (pacMan.GetComponent<Movement>()._dir) {
-                        case Movement.Direction.up:
-                            target_x = pacMan.transform.position.x - 1;
-                            target_y = pacMan.transform.position.y + 1;
-                            break;
-                        case Movement.Direction.down:
-                            target_x = pacMan.transform.position.x;
-                            target_y = pacMan.transform.position.y - 1;
-                            break;
-                        case Movement.Direction.left:
-                            target_x = pacMan.transform.position.x - 1;
-                            target_y = pacMan.transform.position.y;
-                            break;
-                        case Movement.Direction.right:
-                            target_x = pacMan.transform.position.x + 1;
-                            target_y = pacMan.transform.position.y;
-                            break;
+                    if (alter_Behvior) {//alternating behavior here
 
+
+
+
+                    } else {
+                        //GET TARGET
+                        float target_x = pacMan.transform.position.x;
+                        float target_y = -1 * pacMan.transform.position.y;
+                        switch (pacMan.GetComponent<Movement>()._dir) {
+                            case Movement.Direction.up:
+                                target_x = pacMan.transform.position.x - 1;
+                                target_y = pacMan.transform.position.y + 1;
+                                break;
+                            case Movement.Direction.down:
+                                target_x = pacMan.transform.position.x;
+                                target_y = pacMan.transform.position.y - 1;
+                                break;
+                            case Movement.Direction.left:
+                                target_x = pacMan.transform.position.x - 1;
+                                target_y = pacMan.transform.position.y;
+                                break;
+                            case Movement.Direction.right:
+                                target_x = pacMan.transform.position.x + 1;
+                                target_y = pacMan.transform.position.y;
+                                break;
+
+                        }
+                        GameObject Red = GameObject.Find("Blinky(Clone)") ? GameObject.Find("Blinky(Clone)") : GameObject.Find("Blinky 1(Clone)");
+                        Vector2 direction = new Vector2(target_x, target_y) - new Vector2(Red.transform.position.x, Red.transform.position.y);
+                        target_x += direction.x;
+                        target_y += direction.y;
+                        //CHASE
+                        Chase(target_x, target_y);
                     }
-                    GameObject Red = GameObject.Find("Blinky(Clone)");
-                    Vector2 direction = new Vector2(target_x, target_y) - new Vector2(Red.transform.position.x, Red.transform.position.y);
-                    target_x += direction.x;
-                    target_y += direction.y;
-                    //CHASE
-                    Chase(target_x, target_y);
-
                 } else if (ghostID == 4)
                 {
-                    //GET TARGET
-                    float target_x = pacMan.transform.position.x;
-                    float target_y = pacMan.transform.position.y;
-                    if (Mathf.Abs(target_x - gameObject.transform.position.x) <= 8f || Mathf.Abs(target_y - gameObject.transform.position.y) <= 8f)
-                    {
-                        target_x = pacMan.transform.position.x;
-                        target_y = pacMan.transform.position.y;
+                    if (alter_Behvior) {//alternating behavior here
+
+
+
+
+
+                    } else {
+                        //GET TARGET
+                        float target_x = pacMan.transform.position.x;
+                        float target_y = -1 * pacMan.transform.position.y;
+                        if (Mathf.Abs(target_x - gameObject.transform.position.x) <= 8f || Mathf.Abs(target_y - gameObject.transform.position.y) <= 8f) {
+                            target_x = pacMan.transform.position.x;
+                            target_y = pacMan.transform.position.y;
+                        } else {
+                            target_x = 1f;
+                            target_y = -32f;
+                        }
+                        //CHASE
+                        Chase(target_x, target_y);
                     }
-                    else
-                    {
-                        target_x = 1f;
-                        target_y = -32f;
-                    }
-                    //CHASE
-                    Chase(target_x, target_y);
                 }
 
                 break;

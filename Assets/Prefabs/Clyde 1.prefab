@@ -131,6 +131,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ghostID: 4
+  ghostMode: 0
+  alter_Behvior: 1
+  fleeTime: 0
   releaseTime: 8
   waitTime: 0
   range: 0
@@ -146,6 +149,7 @@ MonoBehaviour:
   chooseDirection: 1
   choices: 
   choice: 0
+  TurnTimer: 0
   _state: 0
 --- !u!58 &58018240408972120
 CircleCollider2D:

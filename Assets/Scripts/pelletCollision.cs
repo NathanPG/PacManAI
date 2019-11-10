@@ -63,17 +63,85 @@ public class pelletCollision : MonoBehaviour {
 			blinky.GetComponent<GhostAI>().chooseDirection = true;
 
 			if (!clyde.GetComponent<GhostAI> ().dead) {
-				clyde.GetComponent<Movement> ().MSpeed = 3f;
-			}
+                Movement move = clyde.GetComponent < Movement >();
+                switch (move._dir) {
+                    case Movement.Direction.down:
+                        move._dir = Movement.Direction.up;
+                        break;
+                    case Movement.Direction.up:
+                        move._dir = Movement.Direction.down;
+                        break;
+                    case Movement.Direction.left:
+                        move._dir = Movement.Direction.right;
+                        break;
+                    case Movement.Direction.right:
+                        move._dir = Movement.Direction.left;
+                        break;
+                }
+				move.MSpeed = 3f;
+                clyde.GetComponent<GhostAI>().fleeTime = 10f;
+
+            }
 			if (!pinky.GetComponent<GhostAI> ().dead) {
-				pinky.GetComponent<Movement> ().MSpeed = 3f;
-			}
+                Movement move = pinky.GetComponent<Movement>();
+                switch (move._dir) {
+                    case Movement.Direction.down:
+                        move._dir = Movement.Direction.up;
+                        break;
+                    case Movement.Direction.up:
+                        move._dir = Movement.Direction.down;
+                        break;
+                    case Movement.Direction.left:
+                        move._dir = Movement.Direction.right;
+                        break;
+                    case Movement.Direction.right:
+                        move._dir = Movement.Direction.left;
+                        break;
+                }
+                move.MSpeed = 3f;
+                pinky.GetComponent<GhostAI>().fleeTime = 10f;
+
+            }
 			if (!inky.GetComponent<GhostAI> ().dead) {
-				inky.GetComponent<Movement> ().MSpeed = 3f;
-			}
+                Movement move = inky.GetComponent<Movement>();
+                switch (move._dir) {
+                    case Movement.Direction.down:
+                        move._dir = Movement.Direction.up;
+                        break;
+                    case Movement.Direction.up:
+                        move._dir = Movement.Direction.down;
+                        break;
+                    case Movement.Direction.left:
+                        move._dir = Movement.Direction.right;
+                        break;
+                    case Movement.Direction.right:
+                        move._dir = Movement.Direction.left;
+                        break;
+                }
+                move.MSpeed = 3f;
+                inky.GetComponent<GhostAI>().fleeTime = 10f;
+
+            }
 			if (!blinky.GetComponent<GhostAI> ().dead) {
-				blinky.GetComponent<Movement> ().MSpeed = 3f;
-			}
+                Movement move = blinky.GetComponent<Movement>();
+                switch (move._dir) {
+                    case Movement.Direction.down:
+                        move._dir = Movement.Direction.up;
+                        break;
+                    case Movement.Direction.up:
+                        move._dir = Movement.Direction.down;
+                        break;
+                    case Movement.Direction.left:
+                        move._dir = Movement.Direction.right;
+                        break;
+                    case Movement.Direction.right:
+                        move._dir = Movement.Direction.left;
+                        break;
+                }
+                move.MSpeed = 3f;
+                blinky.GetComponent<GhostAI>().fleeTime = 10f;
+
+            }
         }
         
 

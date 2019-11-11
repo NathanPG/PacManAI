@@ -86,6 +86,8 @@ public class GhostAI : MonoBehaviour {
 	float distY = 0f;
 	float total = 0f;
 
+    float flankx = 0f;
+    float flanky = 0f;
     // Percent chance of each coice. order is: up < right < 0 < down < left for random choice
     // These could be tunable numbers. You may or may not find this useful.
     public float[] directions = new float[4];
@@ -565,7 +567,52 @@ public class GhostAI : MonoBehaviour {
                 else if(ghostID == 2)
                 {
                     if (alter_Behvior) {//alternating behavior here
+                        //GET TARGET
+                        float pac_x = pacMan.transform.position.x;
+                        float pac_y = -1 * pacMan.transform.position.y;
+                        Vector3 target = new Vector3(pac_x, pac_y, pacMan.transform.position.z);
 
+                        float dist = (target - new Vector3(gameObject.transform.position.x, -gameObject.transform.position.y, gameObject.transform.position.z)).magnitude;
+                        if (dist >= 8f)
+                        {
+                            pac_x = pacMan.transform.position.x;
+                            pac_y = -1 * pacMan.transform.position.y;
+                            flankx = pac_x;
+                            flanky = pac_y;
+                        }
+                        else
+                        {
+                            if (flankx == pac_x && flanky == pac_y)
+                            {
+                                flanky = pac_y + 4;
+                            }
+                            else
+                            {
+                                float flankDist = (new Vector3(flankx, flanky, pacMan.transform.position.z) - new Vector3(gameObject.transform.position.x, -gameObject.transform.position.y, gameObject.transform.position.z)).magnitude;
+                                if (flankDist <= 2f && flankx == pac_x && flanky == pac_y + 4)
+                                {
+                                    flankx = pac_x + 2;
+                                    flanky = pac_y;
+                                }
+                                else if (flankDist <= 4f && flankx == pac_x + 4 && flanky == pac_y)
+                                {
+                                    flankx = pac_x;
+                                    flanky = pac_y - 2;
+                                }
+                                else if (flankDist <= 4f && flankx == pac_x && flanky == pac_y - 4)
+                                {
+                                    flankx = pac_x - 2;
+                                    flanky = pac_y;
+                                }
+                                else if (flankDist <= 4f && flankx == pac_x - 4 && flanky == pac_y)
+                                {
+                                    flankx = pac_x + 2;
+                                    flanky = pac_y;
+                                }
+                            }
+                        }
+                        //CHASE
+                        Chase(flankx, flanky);
 
 
                     } else {
@@ -636,16 +683,14 @@ public class GhostAI : MonoBehaviour {
                 } else if (ghostID == 4)
                 {
                     if (alter_Behvior) {//alternating behavior here
-
-
-
-
+                        
 
                     } else {
                         //GET TARGET
                         float target_x = pacMan.transform.position.x;
                         float target_y = -1 * pacMan.transform.position.y;
-                        if (Mathf.Abs(target_x - gameObject.transform.position.x) <= 8f || Mathf.Abs(target_y - gameObject.transform.position.y) <= 8f) {
+                        Vector3 target = new Vector3(target_x, target_y, pacMan.transform.position.x);
+                        if ((target - new Vector3(gameObject.transform.position.x, -gameObject.transform.position.y, gameObject.transform.position.z)).magnitude >= 8f) {
                             target_x = pacMan.transform.position.x;
                             target_y = pacMan.transform.position.y;
                         } else {

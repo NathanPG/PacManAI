@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -558,6 +558,7 @@ public class GhostAI : MonoBehaviour {
                     } else {
                     //CHASE
                     Chase(pacMan.transform.position.x, -1 * pacMan.transform.position.y);
+                    Debug.DrawLine(gameObject.transform.position, new Vector3(pacMan.transform.position.x, pacMan.transform.position.y, gameObject.transform.position.z));
                     }   
                 }
 
@@ -614,7 +615,6 @@ public class GhostAI : MonoBehaviour {
                         //CHASE
                         Chase(flankx, flanky);
 
-
                     } else {
                         //GET TARGET
                         float target_x = pacMan.transform.position.x;
@@ -641,6 +641,7 @@ public class GhostAI : MonoBehaviour {
 
                         //CHASE
                         Chase(target_x, target_y);
+                        Debug.DrawLine(gameObject.transform.position, new Vector3(target_x, -target_y, gameObject.transform.position.z));
                     }
                 }
                 else if (ghostID == 3)
@@ -662,6 +663,7 @@ public class GhostAI : MonoBehaviour {
                         //CHASE
                         //Debug.Log("x: " + x + ", y: " + y);
                         Chase(x, -y);
+                        Debug.DrawLine(gameObject.transform.position, new Vector3(x, y, gameObject.transform.position.z));
                     }
                 } else if (ghostID == 4)
                 {
@@ -672,7 +674,7 @@ public class GhostAI : MonoBehaviour {
                         //GET TARGET
                         float target_x = pacMan.transform.position.x;
                         float target_y = -1 * pacMan.transform.position.y;
-                        Vector3 target = new Vector3(target_x, target_y, pacMan.transform.position.x);
+                        Vector3 target = new Vector3(target_x, target_y, pacMan.transform.position.z);
                         if ((target - new Vector3(gameObject.transform.position.x, -gameObject.transform.position.y, gameObject.transform.position.z)).magnitude >= 8f) {
                             target_x = pacMan.transform.position.x;
                             target_y = -1 * pacMan.transform.position.y;
@@ -682,6 +684,7 @@ public class GhostAI : MonoBehaviour {
                         }
                         //CHASE
                         Chase(target_x, target_y);
+                        Debug.DrawLine(gameObject.transform.position, new Vector3(target_x, -target_y, gameObject.transform.position.z));
                     }
                 }
 

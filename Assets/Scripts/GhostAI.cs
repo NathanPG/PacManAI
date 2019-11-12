@@ -653,32 +653,15 @@ public class GhostAI : MonoBehaviour {
                     } else {
                         //GET TARGET
                         float target_x = pacMan.transform.position.x;
-                        float target_y = -1 * pacMan.transform.position.y;
-                        switch (pacMan.GetComponent<Movement>()._dir) {
-                            case Movement.Direction.up:
-                                target_x = pacMan.transform.position.x - 1;
-                                target_y = pacMan.transform.position.y + 1;
-                                break;
-                            case Movement.Direction.down:
-                                target_x = pacMan.transform.position.x;
-                                target_y = pacMan.transform.position.y - 1;
-                                break;
-                            case Movement.Direction.left:
-                                target_x = pacMan.transform.position.x - 1;
-                                target_y = pacMan.transform.position.y;
-                                break;
-                            case Movement.Direction.right:
-                                target_x = pacMan.transform.position.x + 1;
-                                target_y = pacMan.transform.position.y;
-                                break;
-
-                        }
+                        float target_y = pacMan.transform.position.y;
                         GameObject Red = GameObject.Find("Blinky(Clone)") ? GameObject.Find("Blinky(Clone)") : GameObject.Find("Blinky 1(Clone)");
-                        Vector2 direction = new Vector2(target_x, target_y) - new Vector2(Red.transform.position.x, Red.transform.position.y);
-                        target_x += direction.x;
-                        target_y += direction.y;
+                        float redx = Red.transform.position.x;
+                        float redy = Red.transform.position.y;
+                        float x = 2 * target_x - redx;
+                        float y = 2 * target_y - redy;
                         //CHASE
-                        Chase(target_x, target_y);
+                        Debug.Log("x: " + x + ", y: " + y);
+                        Chase(x, -y);
                     }
                 } else if (ghostID == 4)
                 {
@@ -692,7 +675,7 @@ public class GhostAI : MonoBehaviour {
                         Vector3 target = new Vector3(target_x, target_y, pacMan.transform.position.x);
                         if ((target - new Vector3(gameObject.transform.position.x, -gameObject.transform.position.y, gameObject.transform.position.z)).magnitude >= 8f) {
                             target_x = pacMan.transform.position.x;
-                            target_y = pacMan.transform.position.y;
+                            target_y = -1 * pacMan.transform.position.y;
                         } else {
                             target_x = 1f;
                             target_y = -32f;

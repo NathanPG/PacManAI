@@ -660,7 +660,7 @@ public class GhostAI : MonoBehaviour {
                         float x = 2 * target_x - redx;
                         float y = 2 * target_y - redy;
                         //CHASE
-                        Debug.Log("x: " + x + ", y: " + y);
+                        //Debug.Log("x: " + x + ", y: " + y);
                         Chase(x, -y);
                     }
                 } else if (ghostID == 4)
@@ -678,7 +678,7 @@ public class GhostAI : MonoBehaviour {
                             target_y = -1 * pacMan.transform.position.y;
                         } else {
                             target_x = 1f;
-                            target_y = -32f;
+                            target_y = 32f;
                         }
                         //CHASE
                         Chase(target_x, target_y);

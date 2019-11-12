@@ -622,19 +622,19 @@ public class GhostAI : MonoBehaviour {
                         switch (pacMan.GetComponent<Movement>()._dir) {
                             case Movement.Direction.up:
                                 target_x = pacMan.transform.position.x - 4;
-                                target_y = pacMan.transform.position.y + 4;
+                                target_y = - pacMan.transform.position.y - 4;
                                 break;
                             case Movement.Direction.down:
                                 target_x = pacMan.transform.position.x;
-                                target_y = pacMan.transform.position.y - 4;
+                                target_y = -pacMan.transform.position.y + 4;
                                 break;
                             case Movement.Direction.left:
                                 target_x = pacMan.transform.position.x - 4;
-                                target_y = pacMan.transform.position.y;
+                                target_y = -pacMan.transform.position.y;
                                 break;
                             case Movement.Direction.right:
                                 target_x = pacMan.transform.position.x + 4;
-                                target_y = pacMan.transform.position.y;
+                                target_y = -pacMan.transform.position.y;
                                 break;
 
                         }
